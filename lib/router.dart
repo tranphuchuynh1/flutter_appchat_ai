@@ -16,7 +16,7 @@ final GoRouter router = GoRouter(
         if (username == null || username.isEmpty) {
           return HomeScreen(); // neu k co username -> back ve home
         }
-        return ChatScreen(username: username); // Chuyển đến chatscreen
+        return ChatScreen(username: username);
       },
     ),
   ],

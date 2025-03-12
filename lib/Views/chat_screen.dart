@@ -19,7 +19,9 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Chat AI & Dịch")),
+      appBar: AppBar(title: Center(child: Text("Chat Room", style: TextStyle(color: Colors.white),)),
+        backgroundColor: Colors.blue,
+      ),
       body: Column(
         children: [
           Expanded(
@@ -32,7 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     itemBuilder: (context, index) {
                       final message = state.messages[index];
                       final bool isMe = message.username == widget.username;
-                      final bool isBot = message.username == "Bot";
+                      final bool isBot = message.username == "Nhàn";
                       final bool isTranslation = message.username == "Dịch";
 
                       return Align(
@@ -89,27 +91,44 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           Padding(
             padding: EdgeInsets.all(10),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: messageController,
-                    decoration: InputDecoration(
-                      hintText: "Nhập tin nhắn...",
-                      border: OutlineInputBorder(),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: messageController,
+                      decoration: InputDecoration(
+                        hintText: "Nhập tin nhắn....",
+                        hintStyle: TextStyle(color: Colors.white70),
+                        border: InputBorder.none, // css an~ duong` vien` dj
+                      ),
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: () {
-                    if (messageController.text.isNotEmpty) {
-                      context.read<ChatBloc>().add(SendMessage(widget.username, messageController.text));
-                      messageController.clear();
-                    }
-                  },
-                ),
-              ],
+                  GestureDetector(
+                    onTap: () {
+                      if (messageController.text.isNotEmpty) {
+                        context.read<ChatBloc>().add(SendMessage(widget.username, messageController.text));
+                        messageController.clear();
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
+                      child: Icon(Icons.send, color: Colors.blue),
+                    ),
+                  ),
+
+                ],
+              ),
             ),
           ),
         ],
