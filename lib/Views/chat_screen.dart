@@ -17,7 +17,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  Set<int> _visibleTranslations = {};
+  Set<int> _visibleTranslations = {}; // Lưu trạng thái mở/ẩn bản dịch
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -29,14 +29,20 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  void _toggleTranslation(int index) {
+    setState(() {
+      if (_visibleTranslations.contains(index)) {
+        _visibleTranslations.remove(index);
+      } else {
+        _visibleTranslations.add(index);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: tdWhite,
-      appBar: AppBar(
-        title: Center(
-          child: Text("Chat Room", style: TextStyle(color: Colors.white)),
-        ),
+      appBar: AppBar(title: Center(child: Text("Chat Room", style: TextStyle(color: Colors.white),)),
         backgroundColor: Colors.blue,
       ),
       body: Column(
@@ -46,18 +52,64 @@ class _ChatScreenState extends State<ChatScreen> {
               builder: (context, state) {
                 if (state is ChatLoaded) {
                   _scrollToBottom();
+
                   return ListView.builder(
                     controller: _scrollController,
                     itemCount: state.messages.length,
                     itemBuilder: (context, index) {
                       final message = state.messages[index];
                       final bool isMe = message.username == widget.username;
-                      final bool isBot = message.username == "Nhàn";
+                      final bool isNhan = message.username == "Chị Nhàn";
+                      final bool hasTranslation = state.translations
+                          .containsKey(index);
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           MessageBubble(message: message, isMe: isMe),
+
+                          // Hiển thị nút Dịch ngay cả khi chưa có bản dịch
+                          if (isNhan)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 15),
+                              child: TextButton(
+                                onPressed: () {
+                                  if (!hasTranslation) {
+                                    // Nếu chưa có bản dịch, gửi sự kiện để dịch
+                                    context.read<ChatBloc>().add(
+                                      TranslateMessage(index),
+                                    );
+                                  }
+                                  _toggleTranslation(index);
+                                },
+                                child: Text(
+                                  _visibleTranslations.contains(index)
+                                      ? "Ẩn bản dịch"
+                                      : "Dịch",
+                                  style: TextStyle(color: Colors.blue),
+                                ),
+                              ),
+                            ),
+
+                          if (hasTranslation &&
+                              _visibleTranslations.contains(index))
+                            Padding(
+                              padding: const EdgeInsets.only(left: 15, top: 5),
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  state.translations[index]!,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ),
+                            ),
                         ],
                       );
                     },
@@ -77,48 +129,49 @@ class _ChatScreenState extends State<ChatScreen> {
     return Padding(
       padding: EdgeInsets.all(10),
       child: Container(
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          borderRadius: BorderRadius.circular(30),
-        ),
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: messageController,
-                decoration: InputDecoration(
-                  hintText: "Nhập tin nhắn....",
-                  hintStyle: TextStyle(color: Colors.white70),
-                  border: InputBorder.none,
-                ),
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                if (messageController.text.isNotEmpty) {
-                  context.read<ChatBloc>().add(SendMessage(widget.username, messageController.text));
-                  messageController.clear();
-                }
-              },
-              child: Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                ),
-                child: Icon(Icons.send, color: Colors.blue),
-              ),
-            ),
-          ],
-        ),
-      ),
+      decoration: BoxDecoration(
+      color: Colors.blue,
+      borderRadius: BorderRadius.circular(30),
+    ),
+    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+    child: Row(
+    children: [
+    Expanded(
+    child: TextField(
+    controller: messageController,
+    decoration: InputDecoration(
+    hintText: "Nhập tin nhắn....",
+    hintStyle: TextStyle(color: Colors.white70),
+    border: InputBorder.none, // css an~ duong` vien` dj
+    ),
+    style: TextStyle(color: Colors.white),
+    ),
+    ),
+    GestureDetector(
+    onTap: () {
+    if (messageController.text.isNotEmpty) {
+    context.read<ChatBloc>().add(SendMessage(widget.username, messageController.text));
+    messageController.clear();
+    }
+    },
+    child: Container(
+    padding: EdgeInsets.all(10),
+    decoration: BoxDecoration(
+    shape: BoxShape.circle,
+    color: Colors.white,
+    ),
+    child: Icon(Icons.send, color: Colors.blue),
+    ),
+    ),
+
+    ],
+    ),
+    ),
     );
   }
 }
 
-
+//MessageBubble
 class MessageBubble extends StatelessWidget {
   final Message message;
   final bool isMe;

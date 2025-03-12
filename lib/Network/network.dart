@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class GeminiService {
-  static const String apiKey = "AIzaSyDC2V4n9e9mwJ9u94RezUhBE2RAtWwJkug";
+  static const String apiKey = "AIzaSyD7g46kQEix8Wmz-lE9e9Zi4WsSsuoQAKo";
   static const String baseUrl = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent";
 
 
@@ -14,7 +14,7 @@ class GeminiService {
         "contents": [
           {
             "parts": [
-              {"text": "Dịch câu sau sang tiếng Việt: $responseText"}
+              {"text": "Hãy dịch câu sau sang tiếng Việt một cách tự nhiên, ngắn gọn, không giải thích thêm: $responseText"}
             ]
           }
         ]
