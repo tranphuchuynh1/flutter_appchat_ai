@@ -7,9 +7,8 @@ class SendMessage extends ChatEvent {
   SendMessage(this.username, this.text);
 }
 
-// add 1 event tin nhan tu websocket
-class ReceiveMessage extends ChatEvent {
-  final String text;
+class TranslateMessage extends ChatEvent {
+  final int index; // Vị trí tin nhắn cần dịch
 
-  ReceiveMessage(this.text);
+  TranslateMessage(this.index);
 }
