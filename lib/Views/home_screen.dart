@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_appchat_ai/Views/colors.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,6 +13,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: tdWhite,
       appBar: AppBar(title: Text("Nhập Username")),
       body: Padding(
         padding: EdgeInsets.all(20),
